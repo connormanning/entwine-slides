@@ -87,6 +87,7 @@
 
     <aside class="notes">
         <ul>
+            <li>Want an abstraction</li>
             <li>Doesn't necessarily need to be a dynamic service</li>
             <li>Static serving isn't ruled out</li>
             <li>Flexible - not <i>only</i> for visualization</li>
@@ -116,7 +117,7 @@
                 <ul>
                     <li>Clients can't drive the access</li>
                     <li>Have an AOI - need large downloads</li>
-                    <li>No preview</li>
+                    <li>No overview/preview</li>
                 </ul>
             </li>
             <li>Difficult to manage - from a <i>logical</i> standpoint
@@ -134,7 +135,7 @@
     <h1>Need for reorganization</h1>
 
     <ul>
-        <li>Cannot meet these needs with a *meta*-index</li>
+        <li>Cannot meet these needs with a <i>meta</i>-index</li>
         <li>Would require too much dynamic work</li>
         <li>Up-front cost is ok to trivialize later work</li>
         <li>TODO Picture?</li>
@@ -142,17 +143,17 @@
 
     <aside class="notes">
         <ul>
-            <li>Want to make queries trivial
-                <ul>
-                    <li>Otherwise ms response time impossible</li>
-                    <li>Current organization is non-trivial</li>
-                </ul>
-            </li>
             <li>Why no meta-index?
                 <ul>
                     <li>Want to treat set as a logical unit</li>
                     <li>Need hierarchical access</li>
                     <li>Low-res overview has minimum of touching each file</li>
+                </ul>
+            </li>
+            <li>Want to make queries trivial
+                <ul>
+                    <li>Otherwise ms response time impossible</li>
+                    <li>Current organization is non-trivial</li>
                 </ul>
             </li>
         </ul>
@@ -175,17 +176,15 @@
     <aside class="notes">
         <ul>
             <li>Memory - can't fit entire uncompressed set in memory</li>
-            <li>Lossless - don't want to need original data
-                <ul>
-                    <li>Allow cold-storage</li>
-                </ul>
-            </li>
+            <li>Lossless - want to cold-store original data</li>
             <li>Modifiability - can add more data after-the-fact</li>
             <li>Visualization
                 <ul>
                     <li>millisecond response times</li>
                     <li>LoD structure - targeting dynamic clients</li>
                     <li>Client-controlled - plasio/potree/etc.</li>
+                    <li>Static serve preferred - if server required its
+                        query implementation should be trivial</li>
                 </ul>
             </li>
         </ul>
@@ -205,14 +204,18 @@
     <figure>
         <img src="img/geyser-2.png" alt="geyser"/>
         <figcaption><small>
-            Geyser point cloud > generic "cloud" diagram
+            Geyser point cloud ≫ generic "cloud" diagram
         </small></figcaption>
     </figure>
 
     <aside class="notes">
         <ul>
             <li>Assume we can reasonably rent computing power on-demand</li>
-            <li>Entire dataset not random across all files</li>
+            <li>Parallelizable from <i>practical</i> standpoint
+                <ul>
+                    <li>Entire dataset not random across all files</li>
+                </ul>
+            </li>
             <li>Filesystem scales with computing power</li>
         </ul>
     </aside>
@@ -275,7 +278,7 @@
 
         <figure>
             <img src="img/kd-tree.svg" alt="kd-tree"/>
-            <h6>By contrast: KD-tree - order matters</h6>
+            <h6>By contrast: a KD-tree - where order matters</h6>
             <figcaption><small>
                 By <a href="https://en.wikipedia.org/wiki/User:KiwiSunset" class="extiw" title="en:User:KiwiSunset">KiwiSunset</a> at the <a href="https://en.wikipedia.org/wiki/" class="extiw" title="w:">English language Wikipedia</a>, <a href="http://creativecommons.org/licenses/by-sa/3.0/" title="Creative Commons Attribution-Share Alike 3.0">CC BY-SA 3.0</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=16242249">🔗</a>
             </small></figcaption>
