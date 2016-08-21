@@ -8,5 +8,6 @@ aws s3 cp . s3://entwine-slides/ \
     --exclude "node_modules/*" \
     --exclude "misc/*" \
     --exclude ".git/**" \
-    --exclude "upload.sh"
+    --exclude "upload.sh" \
+    --exclude "quick-upload.sh"
 
