@@ -1,0 +1,19 @@
+#footer-center{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding-left: 10px;
+    padding-bottom: 10px;
+    text-align: center;
+    width: 60px;
+}
+
+li { list-style-type: disc; }
+
+img[alt=tiles] { max-width: 70%; }
+img[alt=iowa-s3] { max-width: 40%; }
+img[alt=geyser] { max-width: 50%; }
+img[alt=quadtree] { max-width: 35%; }
+img[alt=kd-tree] { max-width: 25%; }
+img[alt=layers] { max-width: 65%; }
+

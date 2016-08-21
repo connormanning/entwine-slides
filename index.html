@@ -1,0 +1,362 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Entwine slides</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/entwine.css">
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<script src="js/make-printable.js"></script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+
+
+<!-- 01 - Title slide -->
+<section>
+    <img src="img/logo/color/entwine_logo_2-color.png" alt="logo"/>
+    <h1>500+ Billion Points</h1>
+    <h2>Organizing Point Clouds as Infrastructure</h2>
+    <h3>Connor Manning</h3>
+
+    <aside class="notes">
+        <ul>
+            <li>Focus is on the organization aspect: indexing</li>
+        </ul>
+    </aside>
+</section>
+
+<!-- 02 - Problem statement -->
+<section>
+    <h1>The problem</h1>
+    <h2>Can we put Iowa's lidar in a web browser?</h2>
+    <p><img src="img/iowa.png" alt="iowa"/></p>
+
+    <aside class="notes">
+        <ul>
+            <li>Driving force behind implementation</li>
+            <li>Why?
+                <ul>
+                    <li>Well, it would be cool</li>
+                    <li>As seen soon, solving this has other benefits</li>
+                </ul>
+            </li>
+        </ul>
+    </aside>
+</section>
+
+<!-- 03 - Iowa info -->
+<section>
+    <h1>Iowa lidar collection</h1>
+
+    <ul>
+        <li>≈ 37,000 files</li>
+        <li>≈ 170 billion points</li>
+        <li>&gt; 4.5 TB uncompressed</li>
+        <li>&gt; 400 GB compressed</li>
+    </ul>
+
+    <p><img src="img/iowa-s3-small.png" alt="iowa-s3"/></p>
+
+    <aside class="notes">
+        <ul>
+            <li>Organized as full-resolution tiles</li>
+        </ul>
+    </aside>
+</section>
+
+<!-- 04 - want a service -->
+<section>
+    <h1>A point cloud service</h1>
+    <ul>
+        <li>Client-controlled access
+            <ul>
+                <li>Hierarchical</li>
+                <li>Random-access</li>
+                <li>Dynamic resolution</li>
+                <li>Flexible</li>
+            </ul>
+        </li>
+        <li>Fragmented dataset → single logical unit</li>
+    </ul>
+
+    <aside class="notes">
+        <ul>
+            <li>Doesn't necessarily need to be a dynamic service</li>
+            <li>Static serving isn't ruled out</li>
+            <li>Flexible - not <i>only</i> for visualization</li>
+        </ul>
+    </aside>
+</section>
+
+<!-- 05 - why can't we use the data in its current form? -->
+<section>
+    <h1>Adapting the data as-is?</h1>
+
+    <ul>
+        <li>Difficult to access</li>
+        <li>Difficult to manage</li>
+        <li>Visualization only in pieces</li>
+    </ul>
+
+    <figure>
+        <img src="img/tiles.png" alt="tiles"/>
+        <figcaption><small>Yes, Iowa is flat</small></figcaption>
+    </figure>
+
+    <aside class="notes">
+        <ul>
+            <li>A lot of data here - better not to touch it</li>
+            <li>Difficult to access
+                <ul>
+                    <li>Clients can't drive the access</li>
+                    <li>Have an AOI - need large downloads</li>
+                    <li>No preview</li>
+                </ul>
+            </li>
+            <li>Difficult to manage - from a <i>logical</i> standpoint
+                <ul>
+                    <li>Can't treat data as a single unit</li>
+                    <li>Need to sidecar metadata?</li>
+                </ul>
+            </li>
+        </ul>
+    </aside>
+</section>
+
+<!-- 06 - need to reorganize the data -->
+<section>
+    <h1>Need for reorganization</h1>
+
+    <ul>
+        <li>Cannot meet these needs with a *meta*-index</li>
+        <li>Would require too much dynamic work</li>
+        <li>Up-front cost is ok to trivialize later work</li>
+        <li>TODO Picture?</li>
+    </ul>
+
+    <aside class="notes">
+        <ul>
+            <li>Want to make queries trivial
+                <ul>
+                    <li>Otherwise ms response time impossible</li>
+                    <li>Current organization is non-trivial</li>
+                </ul>
+            </li>
+            <li>Why no meta-index?
+                <ul>
+                    <li>Want to treat set as a logical unit</li>
+                    <li>Need hierarchical access</li>
+                    <li>Low-res overview has minimum of touching each file</li>
+                </ul>
+            </li>
+        </ul>
+    </aside>
+</section>
+
+<!-- 07 - constraints -->
+<section>
+    <h1>Constraints</h1>
+
+    <ul>
+        <li>Memory</li>
+        <li class="fragment">Losslessness</li>
+        <li class="fragment">Modifiability</li>
+        <li class="fragment">Visualization</li>
+    </ul>
+
+    <img src="img/free.png" alt="free"/>
+
+    <aside class="notes">
+        <ul>
+            <li>Memory - can't fit entire uncompressed set in memory</li>
+            <li>Lossless - don't want to need original data
+                <ul>
+                    <li>Allow cold-storage</li>
+                </ul>
+            </li>
+            <li>Modifiability - can add more data after-the-fact</li>
+            <li>Visualization
+                <ul>
+                    <li>millisecond response times</li>
+                    <li>LoD structure - targeting dynamic clients</li>
+                    <li>Client-controlled - plasio/potree/etc.</li>
+                </ul>
+            </li>
+        </ul>
+    </aside>
+</section>
+
+<!-- 08 - Assumptions -->
+<section>
+    <h1>Assumptions</h1>
+
+    <ul>
+        <li>Availability of scalable cloud computing</li>
+        <li>A parallelizable problem</li>
+        <li>Distributed filesystem</li>
+    </ul>
+
+    <figure>
+        <img src="img/geyser-2.png" alt="geyser"/>
+        <figcaption><small>
+            Geyser point cloud > generic "cloud" diagram
+        </small></figcaption>
+    </figure>
+
+    <aside class="notes">
+        <ul>
+            <li>Assume we can reasonably rent computing power on-demand</li>
+            <li>Entire dataset not random across all files</li>
+            <li>Filesystem scales with computing power</li>
+        </ul>
+    </aside>
+</section>
+
+<!-- 09 - Goal: giant octree -->
+<section>
+    <h1>Goal: a massive octree</h1>
+    <section transition="none">
+        <h1>&nbsp;</h1>
+        <ul>
+            <li>Hierarchical</li>
+            <li>Increase depth → increase resolution</li>
+        </ul>
+
+        <figure>
+            <img src="img/layers-4.png" alt="layers"/>
+            <h6>Tree depth layers</h6>
+
+            <figcaption><small>
+                Data source: Vanuatu village, Nepal.
+                <a href="http://www.globaldirt.org">Global DIRT</a>
+            </small></figcaption>
+        </figure>
+
+        <aside class="notes">
+            <ul>
+                <li>A natural mechanism for visualization</li>
+            </ul>
+        </aside>
+    </section>
+    <section transition="none">
+        <h1>&nbsp;</h1>
+        <ul>
+            <li>Spatially distinct → trivially parallelizable</li>
+        </ul>
+
+        <figure>
+            <img src="img/quadtree.svg" alt="quadtree"/>
+            <h6>Quadtree splitting</h6>
+            <figcaption><small>
+                By <a href="//commons.wikimedia.org/wiki/User:David_Eppstein" class="mw-redirect" title="User:David Eppstein">David Eppstein</a>, Public Domain, <a href="https://commons.wikimedia.org/w/index.php?curid=2489019">🔗</a>
+            </small></figcaption>
+        </figure>
+
+        <aside class="notes">
+            <ul>
+                <li>Trivial/natural method of parallelization</li>
+            </ul>
+        </aside>
+    </section>
+    <section>
+        <h1>&nbsp;</h1>
+
+        <ul>
+            <li>Stable &amp; flexible</li>
+            <li>Insertion order doesn't matter</li>
+            <li>No concept of "balance"</li>
+        </ul>
+
+        <figure>
+            <img src="img/kd-tree.svg" alt="kd-tree"/>
+            <h6>By contrast: KD-tree - order matters</h6>
+            <figcaption><small>
+                By <a href="https://en.wikipedia.org/wiki/User:KiwiSunset" class="extiw" title="en:User:KiwiSunset">KiwiSunset</a> at the <a href="https://en.wikipedia.org/wiki/" class="extiw" title="w:">English language Wikipedia</a>, <a href="http://creativecommons.org/licenses/by-sa/3.0/" title="Creative Commons Attribution-Share Alike 3.0">CC BY-SA 3.0</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=16242249">🔗</a>
+            </small></figcaption>
+        </figure>
+        <aside class="notes">
+            <ul>
+                <li>Stable: no matter the impl details, output is the same</li>
+                <li>Important for adding new data to index as it's scanned</li>
+                <li>Avoids needing heuristics before indexing</li>
+            </ul>
+        </aside>
+    </section>
+</section>
+
+<!-- Core segment - entwine details/solutions -->
+<section data-markdown>
+    # TODO - entwine stuff here
+</section>
+
+
+
+
+
+
+
+<!-- Results -->
+<section data-markdown>
+    # (Ending) What does entwine enable?
+
+    - Quick overview of Greyhound
+    - Then speck.ly/potree interface
+    - CLI invocation samples, show "entwine build ..."
+    - Show speed results - coordinator with AHN set
+</section>
+
+<!-- Final slide -->
+<section data-markdown>
+    ![logo](img/logo/color/entwine_logo_2-color.png)
+    ## Links
+
+    - Entwine - entwine.io
+    - Plasio - speck.ly
+</section>
+
+
+<!--
+<section data-markdown>
+    ## The Netherlands
+    - ≈ 41,000 files
+    - ≈ 640 billion points
+    - ≈ 1.5 TB on disk
+    - \> 7.5 TB uncompressed
+
+    Note:
+        Notes here.
+</section>
+-->
+
+
+
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+        <script src="js/jquery-3.1.0.slim.min.js"></script>
+		<script src="js/reveal.js"></script>
+		<script src="js/init.js"></script>
+
+		<link rel="stylesheet" href="css/post.css">
+
+        <div id="hidden" style="display:none;">
+            <div id="footer">
+                <div id="footer-center">
+                    <img
+                        class="footer-logo"
+                        src="img/logo/icons_favicons/entwine_icon_color.png">
+                    </img>
+                </div>
+            </div>
+        </div>
+
+        <script src="js/footer.js"></script>
+	</body>
+</html>

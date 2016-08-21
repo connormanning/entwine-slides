@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+echo "             total      used   free   shared   buffers   cached"
+echo "Mem:         60387     60244     😣         0    148244   346656"
+echo "-/+ buffers/cache:     59826     😖"
+echo "Swap:       327651    325828     😫"
+
