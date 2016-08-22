@@ -326,7 +326,7 @@
 <section>
     <h1>Buckets of points?</h1>
     <ul>
-        <li>Very common</li>
+        <li>A common approach</li>
         <li>Minimum addressable node consists of <i>n</i> points</li>
         <li>
             <i>O</i>(<i>depth</i> * <i>bucketSize</i>) if per-point resolution is needed
@@ -360,12 +360,10 @@
     <h1>Bucket example</h1>
     <ul>
         <li>Strict spacing for Iowa data
-            <span class="fragment">
-                <ul>
-                    <li><i>Average depth</i> = 10</li>
-                    <li><i>Bucket size</i> = 65,536</li>
-                </ul>
-            </span>
+            <ul>
+                <li><i>Average depth</i> = 10</li>
+                <li><i>Bucket size</i> = 65,536</li>
+            </ul>
         </li>
         <li class="fragment">Average comparisons per point: 655,360</li>
         <li class="fragment">
@@ -386,8 +384,8 @@
     <h1>Discrete split step?</h1>
     <ul>
         <li>Split bucketed node when <i>numPoints > bucketSize</i></li>
-        <li>Decimation step reduces concurrent throughput</li>
         <li>Will happen to high-traffic nodes frequently</li>
+        <li>This process reduces concurrent throughput</li>
     </ul>
 
     <figure class="fragment">
@@ -408,6 +406,9 @@
             </li>
             <li>
                 Lack of high-resolution inspection → insertion order matters!
+            </li>
+            <li>
+                High-level nodes will frequently split &amp; block everyone
             </li>
         </ul>
     </aside>
@@ -450,7 +451,7 @@
 
         <ul>
             <li>Extension to global</li>
-            <li>TODO</li>
+            <li>TODO this and subsequent slides</li>
         </ul>
 
         <figure>
@@ -497,6 +498,7 @@
 <section>
     <h1>Chunk splitting</h1>
     <ul>
+        <li>TODO - this slide</li>
         <li>Trivial to bound chunks spatially (parallelizable!)</li>
         <li>Sparse-chunking optimization</li>
         <li>^order of magnitude of key reduction)</li>
