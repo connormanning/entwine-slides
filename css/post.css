@@ -13,6 +13,20 @@ p { margin-top: 0 !important; margin-bottom: 0 !important; }
 
 li { list-style-type: disc; }
 
+.side-by-side {
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 45% !important;
+}
+
+.line-4 {
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 20% !important;
+}
+
 img[alt=iowa] { max-width: 55% }
 img[alt=iowa-s3] { max-width: 40%; }
 img[alt=tiles] { max-width: 75%; }
@@ -22,4 +36,6 @@ img[alt=quadtree-splitting] { max-width: 35%; }
 img[alt=kd-tree] { max-width: 25%; }
 img[alt=octree-splitting] { max-width: 52%; }
 img[alt=quadtree-pyramid] { max-width: 55%; }
+img[alt=morton-ordering] { max-width: 25%; }
+img[alt=z-order-four-levels] { max-width: 30%; }
 
