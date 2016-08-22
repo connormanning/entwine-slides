@@ -184,7 +184,8 @@
                     <li>LoD structure - targeting dynamic clients</li>
                     <li>Client-controlled - plasio/potree/etc.</li>
                     <li>Static serve preferred - if server required its
-                        query implementation should be trivial</li>
+                        query implementation should be trivial
+                    </li>
                 </ul>
             </li>
         </ul>
@@ -203,8 +204,10 @@
 
     <figure>
         <img src="img/geyser-2.png" alt="geyser"/>
+        <h6>Lone Star Geyser</h6>
         <figcaption><small>
-            Geyser point cloud ≫ generic "cloud" diagram
+            Geysers are kind of like clouds, but cooler.
+            Data source: <a href="http://www.erdc.usace.army.mil/Locations/CRREL/Research.aspx">RS/GIS CRREL USACE</a>
         </small></figcaption>
     </figure>
 
@@ -221,19 +224,18 @@
     </aside>
 </section>
 
-<!-- 09 - Goal: giant octree -->
+<!-- 09 - Goal: a massive octree -->
 <section>
     <h1>Goal: a massive octree</h1>
     <section transition="none">
         <h1>&nbsp;</h1>
         <ul>
-            <li>Hierarchical</li>
             <li>Increase depth → increase resolution</li>
         </ul>
 
         <figure>
-            <img src="img/layers-4.png" alt="layers"/>
-            <h6>Tree depth layers</h6>
+            <img src="img/layers.png" alt="nepal-layers"/>
+            <h6>Quadtree depth layering</h6>
 
             <figcaption><small>
                 Data source: Vanuatu village, Nepal.
@@ -254,7 +256,7 @@
         </ul>
 
         <figure>
-            <img src="img/quadtree.svg" alt="quadtree"/>
+            <img src="img/quadtree.svg" alt="quadtree-splitting"/>
             <h6>Quadtree splitting</h6>
             <figcaption><small>
                 By <a href="//commons.wikimedia.org/wiki/User:David_Eppstein" class="mw-redirect" title="User:David Eppstein">David Eppstein</a>, Public Domain, <a href="https://commons.wikimedia.org/w/index.php?curid=2489019">🔗</a>
@@ -280,7 +282,7 @@
             <img src="img/kd-tree.svg" alt="kd-tree"/>
             <h6>By contrast: a KD-tree - where order matters</h6>
             <figcaption><small>
-                By <a href="https://en.wikipedia.org/wiki/User:KiwiSunset" class="extiw" title="en:User:KiwiSunset">KiwiSunset</a> at the <a href="https://en.wikipedia.org/wiki/" class="extiw" title="w:">English language Wikipedia</a>, <a href="http://creativecommons.org/licenses/by-sa/3.0/" title="Creative Commons Attribution-Share Alike 3.0">CC BY-SA 3.0</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=16242249">🔗</a>
+                By <a href="https://en.wikipedia.org/wiki/User:KiwiSunset" title="en:User:KiwiSunset">KiwiSunset</a> at the <a href="https://en.wikipedia.org/wiki/" title="w:">English language Wikipedia</a>, <a href="http://creativecommons.org/licenses/by-sa/3.0/" title="Creative Commons Attribution-Share Alike 3.0">CC BY-SA 3.0</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=16242249">🔗</a>
             </small></figcaption>
         </figure>
         <aside class="notes">
@@ -294,11 +296,60 @@
 </section>
 
 <!-- Core segment - entwine details/solutions -->
-<section data-markdown>
-    # TODO - entwine stuff here
+<section>
+    <h1>Octrees</h1>
+
+    <ul>
+        <li>Basic implementation is pointer-based</li>
+        <li>> 5 TB just for the pointers for Iowa</li>
+    </ul>
+
+    <figure>
+        <img src="img/octree.png" alt="octree-splitting"/>
+        <h6>A classical octree</h6>
+        <figcaption><small>
+            By <a href="//commons.wikimedia.org/wiki/User:WhiteTimberwolf" title="User:WhiteTimberwolf">WhiteTimberwolf</a>  - <span lang="en">Own work</span>, <a href="http://creativecommons.org/licenses/by-sa/3.0/" title="Creative Commons Attribution-Share Alike 3.0">CC BY-SA 3.0</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=9851485">🔗</a>
+        </small></figcaption>
+    </figure>
+
+    <aside class="notes">
+        <ul>
+            <li>Key point: magnitude of data amplifies algorithmic waste</li>
+        </ul>
+    </aside>
 </section>
 
+<section>
+    <h1>Buckets of points?</h1>
+    <ul>
+        <li>Stuff for why buckets no good</li>
+        <li>
+            <i>O</i>(<i>depth</i> * <i>bucketSize</i>) ≫ <i>O</i>(<i>depth</i>)
+        </li>
+        <li>TODO</li>
+    </ul>
+</section>
 
+<section>
+    <h1>Step one - linearize</h1>
+    <ul>
+        <li>Stuff for how we linearize</li>
+        <li>Stuff for why our method is cool</li>
+        <li>TODO</li>
+    </ul>
+</section>
+
+<section>
+    <h1>TODO - entwine stuff here</h1>
+
+    <figure>
+        <img src="img/quadtree-layers.png" alt="quadtree-pyramid"/>
+        <h6>Quadtree layering</h6>
+        <figcaption><small>
+            From <i>Towards Building Deep Networks with Bayesian Factor Graphs</i> by Buonanno &amp; Palmieri <a href="https://www.researchgate.net/figure/272422695_fig2_Figure-3-a-The-quadtree-architecture-b-Reduced-Normal-Factor-Graph-representation">🔗</a>
+        </small></figcaption>
+    </figure>
+</section>
 
 
 
@@ -306,7 +357,8 @@
 
 <!-- Results -->
 <section data-markdown>
-    # (Ending) What does entwine enable?
+    # Post-implementation discussion stuff (TODO)
+    ## What does entwine enable?
 
     - Quick overview of Greyhound
     - Then speck.ly/potree interface
