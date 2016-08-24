@@ -27,6 +27,8 @@ li { list-style-type: disc; }
     max-width: 20% !important;
 }
 
+.light { color: #DDD; }
+
 img[alt=iowa] { max-width: 55% }
 img[alt=iowa-s3] { max-width: 40%; }
 img[alt=tiles] { max-width: 75%; }
@@ -37,5 +39,7 @@ img[alt=kd-tree] { max-width: 25%; }
 img[alt=octree-splitting] { max-width: 52%; }
 img[alt=quadtree-pyramid] { max-width: 55%; }
 img[alt=morton-ordering] { max-width: 25%; }
-img[alt=z-order-four-levels] { max-width: 30%; }
+img[alt=z-order-four-levels] { max-width: 20%; }
+img[alt=quadtree-pyramid] { max-width: 35%; }
+img[alt=first-worker-done] { box-shadow: 0px 0px 2px; }
 

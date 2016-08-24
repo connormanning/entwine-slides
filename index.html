@@ -138,7 +138,6 @@
         <li>Cannot meet these needs with a <i>meta</i>-index</li>
         <li>Would require too much dynamic work</li>
         <li>Up-front cost is ok to trivialize later work</li>
-        <li>TODO Picture?</li>
     </ul>
 
     <aside class="notes">
@@ -322,14 +321,49 @@
     </aside>
 </section>
 
+<!-- 12 - Point spacing -->
+<section>
+    <h1>Point spacing</h1>
+
+    <ul>
+        <li>Important for visualization</li>
+        <li>Requires per-point resolution
+            <ul>
+                <li>(as opposed to per-bucket)</li>
+            </ul>
+        </li>
+    </ul>
+
+    <figure>
+        <span class="line">
+            <img src="img/side-by-side-no-swap.png" alt="one" class="side-by-side"/>
+            <img src="img/side-by-side-swapped.png" alt="two" class="side-by-side"/>
+        </span>
+            <h6>Lack of spacing guarantee - effect on visualization</h6>
+        <figcaption><small>
+        </small></figcaption>
+    </figure>
+
+    <aside class="notes">
+        <ul>
+            <li>An example of the need for per-point resolution</li>
+            <li>With bucket-resolution, finding grid position is expensive</li>
+            <li>Can't just accept first possible point</li>
+            <li>...otherwise we'd be dependent on insertion order</li>
+        </ul>
+    </aside>
+</section>
+
 <!-- 11 - Bucketing overview -->
 <section>
     <h1>Buckets of points?</h1>
     <ul>
         <li>A common approach</li>
         <li>Minimum addressable node consists of <i>n</i> points</li>
-        <li>
-            <i>O</i>(<i>depth</i> * <i>bucketSize</i>) if per-point resolution is needed
+        <li>Calculating a grid position:
+            <ul>
+                <li><i>bucketWidth * (p - minBucketBound) / bucketSteps</i></li>
+            </ul>
         </li>
     </ul>
 
@@ -348,68 +382,32 @@
 
     <aside class="notes">
         <ul>
-            <li>Computational complexity concerns operations which need resolution of a single <i>point</i></li>
-            <li>Key operation needing per-point resolution: spacing</li>
-            <li>Problem: scalability to massive datasets</li>
+            <li>Lots of floating point math</li>
+            <li>To ensure spacing: then need to calculate center</li>
+            <li>...or check 26 neighbors</li>
+            <li>Problem: speed scalability to massive datasets</li>
         </ul>
     </aside>
 </section>
 
-<!-- 12 - Bucketing computational complexity -->
+<!-- 13 - Bucketing computational complexity -->
 <section>
-    <h1>Bucket example</h1>
+    <h1>Traversal numbers</h1>
     <ul>
-        <li>Strict spacing for Iowa data
+        <li>Minimum computations for Iowa:
             <ul>
+                <li><i>Bucket size</i> = 262,144</li>
                 <li><i>Average depth</i> = 10</li>
-                <li><i>Bucket size</i> = 65,536</li>
             </ul>
         </li>
-        <li class="fragment">Average comparisons per point: 655,360</li>
-        <li class="fragment">
-            &gt; 10<sup><small>17</small></sup> comparisons for IA
-        </li>
+        <li>Expected position checks: &gt; <i>10<sup>12</sup></i></li>
     </ul>
 
     <aside class="notes">
         <ul>
-            <li>Strict spacing requires <i>per-point</i> resolution</li>
-            <li>Average comparisons is <i>worst-case</i>!</li>
-        </ul>
-    </aside>
-</section>
-
-<!-- 13 - Decimation issues -->
-<section>
-    <h1>Discrete split step?</h1>
-    <ul>
-        <li>Split bucketed node when <i>numPoints > bucketSize</i></li>
-        <li>Will happen to high-traffic nodes frequently</li>
-        <li>This process reduces concurrent throughput</li>
-    </ul>
-
-    <figure class="fragment">
-        <span class="line">
-            <img src="img/side-by-side-no-swap.png" alt="one" class="side-by-side"/>
-            <img src="img/side-by-side-swapped.png" alt="two" class="side-by-side"/>
-        </span>
-            <h6>Lack of spacing guarantee - effect on visualization</h6>
-        <figcaption><small>
-        </small></figcaption>
-    </figure>
-
-    <aside class="notes">
-        <ul>
-            <li><i>n</i> is numPoints, <i>B</i> is bucket size</li>
-            <li>
-                Doing spacing analysis here would be <i>O(n<sup>2</sup>)</i>
-            </li>
-            <li>
-                Lack of high-resolution inspection → insertion order matters!
-            </li>
-            <li>
-                High-level nodes will frequently split &amp; block everyone
-            </li>
+            <li>Per-comparison operations adds up</li>
+            <li>This is just determining where to place data</li>
+            <li>Not considering allocation etc.</li>
         </ul>
     </aside>
 </section>
@@ -438,10 +436,9 @@
 
         <aside class="notes">
             <ul>
-                <li>
-                    Note: a <i>depth</i> corresponds to the number of bisections
-                </li>
                 <li>A.k.a. morton-ordering</li>
+                <li>Assign numbers to each direction</li>
+                <li>A <i>depth</i> corresponds to the number of bisections</li>
                 <li>Avoiding massive pointer overhead mentioned earlier</li>
             </ul>
         </aside>
@@ -450,8 +447,12 @@
         <h1>&nbsp</h1>
 
         <ul>
-            <li>Extension to global</li>
-            <li>TODO this and subsequent slides</li>
+            <li>Typically, multiple depths → string-encoding
+                <br>
+                &nbsp; &nbsp; &nbsp; &nbsp; ∴ 0 ≠ 00
+            </li>
+            <li>However, it's possible to globally linearize</li>
+            <li>Doing this has some interesting properties</li>
         </ul>
 
         <figure>
@@ -461,13 +462,20 @@
                 By <a href="//commons.wikimedia.org/wiki/User:David_Eppstein" class="mw-redirect" title="User:David Eppstein">David Eppstein</a>, based on an image by <a href="//commons.wikimedia.org/wiki/User:Hesperian" title="User:Hesperian">Hesperian</a>. Own work</span>, <a href="http://creativecommons.org/licenses/by-sa/3.0/" title="Creative Commons Attribution-Share Alike 3.0">CC BY-SA 3.0</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=3879675">🔗</a>
             </small></figcaption>
         </figure>
+    </section>
+    <section>
+        <h1>&nbsp;</h1>
+
+        <h2>Entwine's method</h2>
+
+        <h3>TODO - diagram here</h3>
 
         <aside class="notes">
             <ul>
                 <li>Important: these are <i>numbers</i>, not encodings</li>
                 <li>Distinct from using padding for Z-order curve: 0 != 00</li>
                 <li>Can perform queries with mathematical operators</li>
-                <li>Just an infinitely long array, logically</li>
+                <li>Logically: an infinitely long array</li>
             </ul>
         </aside>
     </section>
@@ -475,14 +483,13 @@
 
 <!-- 15 - Properties of our linearization -->
 <section>
-    <h1>Mathematical properties</h1>
+    <h1>Properties</h1>
 
     <ul>
-        <li>Spacing guarantee in <i>O</i>(1) comparisons per depth</li>
-        <li>Chunk on depth boundaries: can query LoDs with ≥ &amp; &lt;</li>
-        <li>Hop down the array in constant time</li>
-        <li>Never concerned with more than one point (concurrency!)</li>
-        <li>Cache coherence</li>
+        <li>Spacing guarantee in <i>1</i> comparison per depth</li>
+        <li>Can query levels-of-detail with inequalities</li>
+        <li>Concurrency-friendly</li>
+        <li>Efficient</li>
     </ul>
 
     <figure>
@@ -492,29 +499,116 @@
             From <i>Towards Building Deep Networks with Bayesian Factor Graphs</i> by Buonanno &amp; Palmieri <a href="https://www.researchgate.net/figure/272422695_fig2_Figure-3-a-The-quadtree-architecture-b-Reduced-Normal-Factor-Graph-representation">🔗</a>
         </small></figcaption>
     </figure>
+
+    <aside class="notes">
+        <ul>
+            <li>Concurrency-friendly:
+                no neighbor checks - one position at a time
+            </li>
+            <li>Efficient: quick to climb depths.
+                Also compact - no mappings required
+            </li>
+            <li>Don't need spatial query to select data</li>
+            <li>Database-friendly - range-queryable</li>
+        </ul>
+    </aside>
 </section>
 
-<!-- 16 - Entwine's chunking methodology -->
+<!-- 16 - Splitting methods -->
 <section>
     <h1>Chunk splitting</h1>
+    <section>
+        <h2>Discrete steps?</h2>
+        <ul>
+            <li>Split bucketed node when <i>numPoints > bucketSize</i></li>
+            <li>Will happen to high-traffic nodes frequently</li>
+            <li>This process reduces concurrent throughput</li>
+        </ul>
+
+        <aside class="notes">
+            <ul>
+                <li>
+                    High-level nodes will frequently split &amp; block everyone
+                </li>
+            </ul>
+        </aside>
+    </section>
+    <section>
+        <h2>Better: a priori</h2>
+        <ul>
+            <li>Trivial to bound chunks spatially - parallelizable!</li>
+            <li>Sparse-chunking optimization
+                <ul>
+                    <li>Density multiplier decreases after
+                        <i>log<sub>4</sub>(numPoints)</i>
+                    <li>Order of magnitude of key reduction</li>
+                    <li class="fragment">
+                        → Order of magnitude of IO RTT reduction
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+        <aside class="notes">
+            <ul>
+                <li>How? Start on depth boundary and use binary sizing</li>
+                <li>Parallelizable because files tend not to overlap</li>
+                <li>Mapping acceptable for sparse chunks</li>
+                <li>...because they're very geospatially specialized</li>
+            </ul>
+        </aside>
+    </section>
+</section>
+
+<!-- 17 - More tricks -->
+<section>
+    <h1>More tricks</h1>
+
     <ul>
-        <li>TODO - this slide</li>
-        <li>Trivial to bound chunks spatially (parallelizable!)</li>
-        <li>Sparse-chunking optimization</li>
-        <li>^order of magnitude of key reduction)</li>
+        <li>Aggressive <span class="light">over-</span>optimization</li>
+        <li>Heuristic tuning over lots of data</li>
+        <li>Custom big-integer library: <a href="https://github.com/connormanning/little-big-int">little-big-int</a></li>
+        <li>Custom memory pool: <a href="https://github.com/connormanning/splice-pool">splice-pool</a></li>
     </ul>
 </section>
 
-
 <!-- Results -->
-<section data-markdown>
-    # Post-implementation discussion stuff (TODO)
-    ## What does entwine enable?
+<section>
+    <h1>Results</h1>
 
-    - Quick overview of Greyhound
-    - Then speck.ly/potree interface
-    - CLI invocation samples, show "entwine build ..."
-    - Show speed results - coordinator with AHN set
+    <section>
+        <figure>
+            <img src="img/first-worker-done-cropped.png"
+                 alt="first-worker-done"/>
+            <h6>Netherlands progress</h6>
+        </figure>
+    </section>
+    <section>
+        <ul>
+            <li>28 instances</li>
+            <li>One instance: 30 cores, 60GB</li>
+            <li>Per-instance pace: ≈ 2.65B points/hour</li>
+        </ul>
+    </section>
+</section>
+
+<section>
+    <h1>Using it</h1>
+
+    <h2>TODO</h2>
+    <ul>
+        <li>Show "entwine build ..." CLI</li>
+        <li>Coordinator entry screen?</li>
+    </ul>
+</section>
+
+<section>
+    <h1>Uses</h1>
+    <h2>TODO</h2>
+    <ul>
+        <li>Greyhound</li>
+        <li>Speck.ly/Potree</li>
+    </ul>
 </section>
 
 <!-- Final slide -->
