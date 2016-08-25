@@ -496,10 +496,10 @@
     <section>
         <h1>&nbsp;</h1>
         <ul>
-            <li>Spacing guarantee in <i>1</i> comparison per depth</li>
-            <li>Can query tree depths with inequalities</li>
             <li>Concurrency-friendly</li>
             <li>Traversing the tree is very efficient</li>
+            <li>Ensuring point spacing is trivial</li>
+            <li>Queries are fast</li>
         </ul>
 
         <figure>
@@ -519,20 +519,70 @@
                     Also compact - no mappings required
                 </li>
                 <li>Don't need spatial query to select data</li>
-                <li>Database-friendly - range-queryable</li>
             </ul>
         </aside>
     </section>
+</section>
+
+<!-- 16 - Query properties -->
+<section>
+    <h1>Querying</h1>
     <section>
-        <h2>TODO Illustrate query</h3>
+        <h1>&nbsp;</h1>
+        <figure>
+            <img src="img/query.png" alt="query"/>
+        </figure>
+        <h2>How do I query this tile at depth <i>n</i>?</h2>
+        <ul>
+            <li>Bisect southeast, then bisect northwest</li>
+            <li>These 2 traversals give us an ID of 17 at depth 2</li>
+            <li>Call this the <i>nominal</i> depth for this tile
+                <ul><li>Where traversal bounds = query bounds</li></ul>
+            </li>
+        </ul>
+    </section>
+    <section>
+        <h1>&nbsp;</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Depth</th>
+                    <th>Range</th>
+                    <th>Max points</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>2</td><td>17-18</td><td>1</td></tr>
+                <tr><td>3</td><td>69-73</td><td>4</td></tr>
+                <tr><td>5</td><td>309-373</td><td>64</td></tr>
+                <tr><td></td><td>...</td><td></td></tr>
+                <tr><td>10</td><td>316757-382293</td><td>65536</td></tr>
+            </tbody>
+        </table>
+
+        <ul class="small-code" id="query-properties">
+            <li class="fragment">
+                <code>
+                <i>maxPoints<sub>depth</sub></i> =
+                4<sup>(<i>depth</i> - <i>nominalDepth</i>)</sup>
+                </code>
+            </li>
+            <li class="fragment">
+                <code>
+                    SELECT chunkdata FROM entwine WHERE
+                    id &gt;= 316757 AND id &lt; 382293
+                </code>
+            </li>
+        </ul>
     </section>
 </section>
 
 <!-- 16 - Splitting methods -->
 <section>
     <h1>Chunk splitting</h1>
+    <!--
     <section>
-        <h2>Discrete steps?</h2>
+        <h2>At discrete events?</h2>
         <ul>
             <li>Split bucketed node when <i>numPoints > bucketSize</i></li>
             <li>Will happen to high-traffic nodes frequently</li>
@@ -550,19 +600,27 @@
     <section>
         <h1>&nbsp;</h1>
         <h2>Better: a priori</h2>
+    -->
         <ul>
-            <li>Trivial to bound chunks spatially - parallelizable!</li>
+            <li>Trivial to bound chunks spatially
+                <ul>
+                    <li>Parallelizable</li>
+                    <li>Queryable</li>
+                </ul>
+            </li>
             <li>Sparse-chunking optimization
                 <ul>
                     <li>Density multiplier decreases after
                         <i>log<sub>4</sub>(numPoints)</i>
-                    <li>...so stop splitting spatially near that depth</li>
+                    <li>...so stop splitting spatially near that depth
                     <span class="fragment">
-                    <li>Order of magnitude of key reduction</li>
-                    <li>
-                        → Order of magnitude of IO reduction
-                    </li>
-                    </span>
+                        <ul>
+                        <li>Order of magnitude of key reduction</li>
+                        <li>
+                            → Order of magnitude of IO reduction
+                        </li>
+                        </ul>
+                    </span></li>
                 </ul>
             </li>
         </ul>
@@ -577,7 +635,7 @@
                 <li>Practial points-per-chunk shrinks</li>
             </ul>
         </aside>
-    </section>
+    <!-- </section> -->
 </section>
 
 <!-- 17 - More tricks -->
@@ -604,7 +662,7 @@
     <h1>Results</h1>
 
     <section>
-        <h2>Another set - the Netherlands</h2>
+        <h2>A larger set - the Netherlands</h2>
         <ul>
             <li>41,000 files</li>
             <li>≈ 640 billion points</li>
@@ -623,6 +681,8 @@
     </section>
     <section>
         <ul>
+            <li>AWS EC2 &amp; S3</li>
+            <li>Reprojected to EPSG:3857</li>
             <li>28 instances
                 <ul>
                     <li>One instance: 30 cores, 60GB</li>
@@ -658,6 +718,7 @@
         <h2>Greyhound</h2>
         <ul>
             <li>A simple RESTful HTTP server</li>
+            <span class="small-code">
             <li><code>http://data.greyhound.io/resource/iowa/info</code></li>
             <li><code>http://data.greyhound.io/resource/iowa/read?</code>
                 <ul>
@@ -674,6 +735,7 @@
                         schema=[{name:"X",type:"floating",size:"8"}, ...]
                     </code></li>
                 </ul>
+                </span>
             </li>
         </ul>
     </section>
