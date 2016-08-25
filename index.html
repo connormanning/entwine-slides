@@ -321,38 +321,6 @@
     </aside>
 </section>
 
-<!-- 12 - Point spacing -->
-<section>
-    <h1>Point spacing</h1>
-
-    <ul>
-        <li>Important for visualization</li>
-        <li>Requires per-point resolution
-            <ul>
-                <li>(as opposed to per-bucket)</li>
-            </ul>
-        </li>
-    </ul>
-
-    <figure>
-        <span class="line">
-            <img src="img/side-by-side-no-swap.png" alt="one" class="side-by-side"/>
-            <img src="img/side-by-side-swapped.png" alt="two" class="side-by-side"/>
-        </span>
-            <h6>Lack of spacing guarantee - effect on visualization</h6>
-        <figcaption><small>
-        </small></figcaption>
-    </figure>
-
-    <aside class="notes">
-        <ul>
-            <li>With bucket-resolution, finding grid position is expensive</li>
-            <li>Can't just accept first possible point</li>
-            <li>...otherwise we'd be dependent on insertion order</li>
-        </ul>
-    </aside>
-</section>
-
 <!-- 11 - Bucketing overview -->
 <section>
     <h1>Buckets of points?</h1>
@@ -385,6 +353,31 @@
             <li>To ensure spacing: then need to calculate center</li>
             <li>...or check 26 neighbors</li>
             <li>Problem: speed scalability to massive datasets</li>
+        </ul>
+    </aside>
+</section>
+
+<!-- 12 - Point spacing -->
+<section>
+    <h1>Point spacing</h1>
+
+    <figure>
+        <span class="line">
+            <img src="img/side-by-side-no-swap.png" alt="one" class="side-by-side"/>
+            <img src="img/side-by-side-swapped.png" alt="two" class="side-by-side"/>
+        </span>
+            <h6>Lack of spacing guarantee - effect on visualization</h6>
+        <figcaption><small>
+        </small></figcaption>
+    </figure>
+
+    <aside class="notes">
+        <ul>
+            <li>With bucket-resolution, finding grid position is expensive</li>
+            <li>Can't just accept first possible point</li>
+            <li>...otherwise we'd be dependent on insertion order</li>
+            <li>This is why you can't just bucket points by chunk bound</li>
+            <li>...since we need to locate each point with full detail</li>
         </ul>
     </aside>
 </section>
@@ -456,7 +449,7 @@
 
         <figure>
             <img src="img/z-order-four-levels.svg" alt="z-order-four-levels"/>
-            <h6>Z-order curve for depth 3</h6>
+            <h6>Z-order curve over depths 1, 2, 3, 4</h6>
             <figcaption><small>
                 By <a href="//commons.wikimedia.org/wiki/User:David_Eppstein" class="mw-redirect" title="User:David Eppstein">David Eppstein</a>, based on an image by <a href="//commons.wikimedia.org/wiki/User:Hesperian" title="User:Hesperian">Hesperian</a>. Own work</span>, <a href="http://creativecommons.org/licenses/by-sa/3.0/" title="Creative Commons Attribution-Share Alike 3.0">CC BY-SA 3.0</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=3879675">🔗</a>
             </small></figcaption>
@@ -465,14 +458,30 @@
     <section>
         <h1>&nbsp;</h1>
 
-        <h2>Entwine's method</h2>
+        <figure>
+            <img src="img/linearization.png" alt="linearization"/>
+            <h6>Global linearization</h6>
+        </figure>
+    </section>
+    <section>
+        <h1>&nbsp;</h1>
 
-        <h3>TODO - diagram here</h3>
+        <h2>Traversal</h2>
+        <p class="formula"><i>index <sub>d</sub></i> =
+            (<i>index <sub>d - 1</sub></i>) &lt;&lt; 2 + 1 + <i>direction</i>
+        </p>
+    </section>
+    <section>
+        <h1>&nbsp;</h1>
+
+        <figure>
+            <img src="img/linearization-with-hops.png" alt="hops"/>
+            <h6>Traversal</h6>
+        </figure>
 
         <aside class="notes">
             <ul>
                 <li>Important: these are <i>numbers</i>, not encodings</li>
-                <li>Distinct from using padding for Z-order curve: 0 != 00</li>
                 <li>Can perform queries with mathematical operators</li>
                 <li>Logically: an infinitely long array</li>
             </ul>
@@ -484,33 +493,39 @@
 <section>
     <h1>Properties</h1>
 
-    <ul>
-        <li>Spacing guarantee in <i>1</i> comparison per depth</li>
-        <li>Can query tree depths with inequalities</li>
-        <li>Concurrency-friendly</li>
-        <li>Traversing the tree is very efficient</li>
-    </ul>
-
-    <figure>
-        <img src="img/quadtree-layers.png" alt="quadtree-pyramid"/>
-        <h6>Quadtree layering</h6>
-        <figcaption><small>
-            From <i>Towards Building Deep Networks with Bayesian Factor Graphs</i> by Buonanno &amp; Palmieri <a href="https://www.researchgate.net/figure/272422695_fig2_Figure-3-a-The-quadtree-architecture-b-Reduced-Normal-Factor-Graph-representation">🔗</a>
-        </small></figcaption>
-    </figure>
-
-    <aside class="notes">
+    <section>
+        <h1>&nbsp;</h1>
         <ul>
-            <li>Concurrency-friendly:
-                no neighbor checks - one position at a time
-            </li>
-            <li>Efficient: quick to climb depths.
-                Also compact - no mappings required
-            </li>
-            <li>Don't need spatial query to select data</li>
-            <li>Database-friendly - range-queryable</li>
+            <li>Spacing guarantee in <i>1</i> comparison per depth</li>
+            <li>Can query tree depths with inequalities</li>
+            <li>Concurrency-friendly</li>
+            <li>Traversing the tree is very efficient</li>
         </ul>
-    </aside>
+
+        <figure>
+            <img src="img/quadtree-layers.png" alt="quadtree-pyramid"/>
+            <h6>Quadtree layering</h6>
+            <figcaption><small>
+                From <i>Towards Building Deep Networks with Bayesian Factor Graphs</i> by Buonanno &amp; Palmieri <a href="https://www.researchgate.net/figure/272422695_fig2_Figure-3-a-The-quadtree-architecture-b-Reduced-Normal-Factor-Graph-representation">🔗</a>
+            </small></figcaption>
+        </figure>
+
+        <aside class="notes">
+            <ul>
+                <li>Concurrency-friendly:
+                    no neighbor checks - one position at a time
+                </li>
+                <li>Efficient: quick to climb depths.
+                    Also compact - no mappings required
+                </li>
+                <li>Don't need spatial query to select data</li>
+                <li>Database-friendly - range-queryable</li>
+            </ul>
+        </aside>
+    </section>
+    <section>
+        <h2>TODO Illustrate query</h3>
+    </section>
 </section>
 
 <!-- 16 - Splitting methods -->
@@ -589,6 +604,16 @@
     <h1>Results</h1>
 
     <section>
+        <h2>Another set - the Netherlands</h2>
+        <ul>
+            <li>41,000 files</li>
+            <li>≈ 640 billion points</li>
+            <li>≈ 1.5 TB on disk</li>
+            <li>&gt; 7.5 TB uncompressed</li>
+            <li>XYZ only</li>
+        </ul>
+    </section>
+    <section>
         <h1>&nbsp;</h1>
         <figure>
             <img src="img/first-worker-done-cropped.png"
@@ -617,10 +642,17 @@
            data-src="img/zoom.mov">
     </video>
     <h6>Rijksmuseum</h6>
+
+    <aside class="notes">
+        <ul>
+            <li>Completely browser-cached - no server hits for this movie</li>
+            <li>Mapbox tiles splatted over points in real-time</li>
+        </ul>
+    </aside>
 </section>
 
 <section>
-    <h1>How can we use it?</h1>
+    <h1>Using the output</h1>
     <section>
         <h1>&nbsp;</h1>
         <h2>Greyhound</h2>
@@ -651,7 +683,7 @@
         <ul>
             <li>Speck.ly <a href="http://speck.ly">🔗</a></li>
             <li>Potree fork <a href="http://potree.entwine.io">🔗</a></li>
-            <li>PDAL reader (in progress) <a href="http://pdal.io">🔗</a></li>
+            <li>PDAL reader <a href="http://pdal.io">🔗</a></li>
         </ul>
 
         <aside class="notes">
@@ -664,7 +696,7 @@
 </section>
 
 <section>
-    <h1>Using it</h1>
+    <h1>Building via CLI</h1>
 
     <ul>
         <li><code>entwine build</code>
@@ -696,21 +728,6 @@
         <li>Greyhound - <a href="http://greyhound.io">greyhound.io</a></li>
     </ul>
 </section>
-
-
-<!--
-<section data-markdown>
-    ## The Netherlands
-    - ≈ 41,000 files
-    - ≈ 640 billion points
-    - ≈ 1.5 TB on disk
-    - \> 7.5 TB uncompressed
-
-    Note:
-        Notes here.
-</section>
--->
-
 
 
 			</div>
