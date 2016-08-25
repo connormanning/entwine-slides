@@ -346,7 +346,6 @@
 
     <aside class="notes">
         <ul>
-            <li>An example of the need for per-point resolution</li>
             <li>With bucket-resolution, finding grid position is expensive</li>
             <li>Can't just accept first possible point</li>
             <li>...otherwise we'd be dependent on insertion order</li>
@@ -392,15 +391,15 @@
 
 <!-- 13 - Bucketing computational complexity -->
 <section>
-    <h1>Traversal numbers</h1>
+    <h1>A matter of scale</h1>
     <ul>
-        <li>Minimum computations for Iowa:
+        <li>Some numbers:
             <ul>
                 <li><i>Bucket size</i> = 262,144</li>
                 <li><i>Average depth</i> = 10</li>
             </ul>
         </li>
-        <li>Expected position checks: &gt; <i>10<sup>12</sup></i></li>
+        <li>Expected comparisons: &gt; <i>10<sup>12</sup></i></li>
     </ul>
 
     <aside class="notes">
@@ -487,9 +486,9 @@
 
     <ul>
         <li>Spacing guarantee in <i>1</i> comparison per depth</li>
-        <li>Can query levels-of-detail with inequalities</li>
+        <li>Can query tree depths with inequalities</li>
         <li>Concurrency-friendly</li>
-        <li>Efficient</li>
+        <li>Traversing the tree is very efficient</li>
     </ul>
 
     <figure>
@@ -522,7 +521,7 @@
         <ul>
             <li>Split bucketed node when <i>numPoints > bucketSize</i></li>
             <li>Will happen to high-traffic nodes frequently</li>
-            <li>This process reduces concurrent throughput</li>
+            <li>Concurrent throughput is reduced</li>
         </ul>
 
         <aside class="notes">
@@ -534,6 +533,7 @@
         </aside>
     </section>
     <section>
+        <h1>&nbsp;</h1>
         <h2>Better: a priori</h2>
         <ul>
             <li>Trivial to bound chunks spatially - parallelizable!</li>
@@ -541,10 +541,13 @@
                 <ul>
                     <li>Density multiplier decreases after
                         <i>log<sub>4</sub>(numPoints)</i>
+                    <li>...so stop splitting spatially near that depth</li>
+                    <span class="fragment">
                     <li>Order of magnitude of key reduction</li>
-                    <li class="fragment">
-                        → Order of magnitude of IO RTT reduction
+                    <li>
+                        → Order of magnitude of IO reduction
                     </li>
+                    </span>
                 </ul>
             </li>
         </ul>
@@ -555,6 +558,8 @@
                 <li>Parallelizable because files tend not to overlap</li>
                 <li>Mapping acceptable for sparse chunks</li>
                 <li>...because they're very geospatially specialized</li>
+                <li>Theoretical points-per-chunk grows indefinitely</li>
+                <li>Practial points-per-chunk shrinks</li>
             </ul>
         </aside>
     </section>
@@ -566,10 +571,17 @@
 
     <ul>
         <li>Aggressive <span class="light">over-</span>optimization</li>
-        <li>Heuristic tuning over lots of data</li>
+        <li>Heuristic tuning - over lots of data</li>
         <li>Custom big-integer library: <a href="https://github.com/connormanning/little-big-int">little-big-int</a></li>
         <li>Custom memory pool: <a href="https://github.com/connormanning/splice-pool">splice-pool</a></li>
     </ul>
+
+    <aside class="notes">
+        <ul>
+            <li>Big-int: stack-allocator, good for small case</li>
+            <li>Pool: reduce allocations &amp; concurrency blocks</li>
+        </ul>
+    </aside>
 </section>
 
 <!-- Results -->
@@ -577,47 +589,112 @@
     <h1>Results</h1>
 
     <section>
+        <h1>&nbsp;</h1>
         <figure>
             <img src="img/first-worker-done-cropped.png"
                  alt="first-worker-done"/>
-            <h6>Netherlands progress</h6>
+            <h6>Netherlands indexing pace</h6>
         </figure>
     </section>
     <section>
         <ul>
-            <li>28 instances</li>
-            <li>One instance: 30 cores, 60GB</li>
-            <li>Per-instance pace: ≈ 2.65B points/hour</li>
+            <li>28 instances
+                <ul>
+                    <li>One instance: 30 cores, 60GB</li>
+                    <li>Per-instance pace: ≈ 2.65B points/hour</li>
+                </ul>
+            </li>
+            <li>Total cost: ≈ $400</li>
+            <li>Total time: &lt; 9.5 hours</li>
         </ul>
+    </section>
+</section>
+
+<section>
+    <h1>What do we get?</h1>
+    <video controls="controls"
+           alt="zoom"
+           data-src="img/zoom.mov">
+    </video>
+    <h6>Rijksmuseum</h6>
+</section>
+
+<section>
+    <h1>How can we use it?</h1>
+    <section>
+        <h1>&nbsp;</h1>
+        <h2>Greyhound</h2>
+        <ul>
+            <li>A simple RESTful HTTP server</li>
+            <li><code>http://data.greyhound.io/resource/iowa/info</code></li>
+            <li><code>http://data.greyhound.io/resource/iowa/read?</code>
+                <ul>
+                    <li><code>
+                        bounds=[-10758084,4793192,-361921,-10034124,5517152,362039]&amp;
+                    </code></li>
+                    <li><code>
+                        depth=10&amp;
+                    </code></li>
+                    <li><code>
+                        compress=true&amp;
+                    </code></li>
+                    <li><code>
+                        schema=[{name:"X",type:"floating",size:"8"}, ...]
+                    </code></li>
+                </ul>
+            </li>
+        </ul>
+    </section>
+    <section>
+        <h1>&nbsp;</h1>
+        <h2>Other projects</h2>
+        <ul>
+            <li>Speck.ly <a href="http://speck.ly">🔗</a></li>
+            <li>Potree fork <a href="http://potree.entwine.io">🔗</a></li>
+            <li>PDAL reader (in progress) <a href="http://pdal.io">🔗</a></li>
+        </ul>
+
+        <aside class="notes">
+            <ul>
+                <li>speck.ly: raster-tile splatting</li>
+                <li>Potree: works on mobile</li>
+            </ul>
+        </aside>
     </section>
 </section>
 
 <section>
     <h1>Using it</h1>
 
-    <h2>TODO</h2>
     <ul>
-        <li>Show "entwine build ..." CLI</li>
-        <li>Coordinator entry screen?</li>
+        <li><code>entwine build</code>
+            <ul>
+                <li class="fragment"><code>-i ~/data/iowa</code></li>
+                <li class="fragment"><code>-o ~/entwine/iowa</code></li>
+                <li class="fragment"><code>-r EPSG:3857</code></li>
+                <li class="fragment"><code>-t 12</code></li>
+            </ul>
+        </li>
     </ul>
-</section>
 
-<section>
-    <h1>Uses</h1>
-    <h2>TODO</h2>
-    <ul>
-        <li>Greyhound</li>
-        <li>Speck.ly/Potree</li>
-    </ul>
+    <aside class="notes">
+        <ul>
+            <li>Docker mention</li>
+        </ul>
+    </aside>
 </section>
 
 <!-- Final slide -->
-<section data-markdown>
-    ![logo](img/logo/color/entwine_logo_2-color.png)
-    ## Links
+<section>
+    <img alt="logo" src="img/logo/color/entwine_logo_2-color.png"/>
+    <h2>Links</h2>
 
-    - Entwine - entwine.io
-    - Plasio - speck.ly
+    <ul>
+        <li>Entwine - <a href="http://entwine.io">entwine.io</a></li>
+        <li>Plasio - <a href="http://speck.ly">speck.ly</a></li>
+        <li>PDAL - <a href="http://pdal.io">pdal.io</a></li>
+        <li>Greyhound - <a href="http://greyhound.io">greyhound.io</a></li>
+    </ul>
 </section>
 
 
