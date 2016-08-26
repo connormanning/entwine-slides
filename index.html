@@ -70,34 +70,9 @@
     </aside>
 </section>
 
-<!-- 04 - want a service -->
+<!-- 04 - why can't we use the data in its current form? -->
 <section>
-    <h1>A point cloud service</h1>
-    <ul>
-        <li>Client-controlled access
-            <ul>
-                <li>Hierarchical</li>
-                <li>Random-access</li>
-                <li>Dynamic resolution</li>
-                <li>Flexible</li>
-            </ul>
-        </li>
-        <li>Fragmented dataset → single logical unit</li>
-    </ul>
-
-    <aside class="notes">
-        <ul>
-            <li>Want an abstraction</li>
-            <li>Doesn't necessarily need to be a dynamic service</li>
-            <li>Static serving isn't ruled out</li>
-            <li>Flexible - not <i>only</i> for visualization</li>
-        </ul>
-    </aside>
-</section>
-
-<!-- 05 - why can't we use the data in its current form? -->
-<section>
-    <h1>Adapting the data as-is?</h1>
+    <h1>Lots of tiles</h1>
 
     <ul>
         <li>Difficult to access</li>
@@ -130,14 +105,39 @@
     </aside>
 </section>
 
+<!-- 05 - want a service -->
+<section>
+    <h1>A point cloud service</h1>
+    <ul>
+        <li>Client-controlled access
+            <ul>
+                <li>Hierarchical</li>
+                <li>Random-access</li>
+                <li>Dynamic resolution</li>
+                <li>Flexible</li>
+            </ul>
+        </li>
+        <li>Fragmented dataset → single logical unit</li>
+    </ul>
+
+    <aside class="notes">
+        <ul>
+            <li>Want an abstraction</li>
+            <li>Doesn't necessarily need to be a dynamic service</li>
+            <li>Static serving isn't ruled out</li>
+            <li>Flexible - not <i>only</i> for visualization</li>
+        </ul>
+    </aside>
+</section>
+
 <!-- 06 - need to reorganize the data -->
 <section>
     <h1>Need for reorganization</h1>
 
     <ul>
         <li>Cannot meet these needs with a <i>meta</i>-index</li>
-        <li>Would require too much dynamic work</li>
-        <li>Up-front cost is ok to trivialize later work</li>
+        <li>Level-of-detail query is unreasonable</li>
+        <li>Up-front cost is ok</li>
     </ul>
 
     <aside class="notes">
@@ -205,7 +205,6 @@
         <img src="img/geyser-2.png" alt="geyser"/>
         <h6>Lone Star Geyser</h6>
         <figcaption><small>
-            Geysers are kind of like clouds, but cooler.
             Data source: <a href="http://www.erdc.usace.army.mil/Locations/CRREL/Research.aspx">RS/GIS CRREL USACE</a>
         </small></figcaption>
     </figure>
@@ -274,7 +273,7 @@
         <ul>
             <li>Stable &amp; flexible</li>
             <li>Insertion order doesn't matter</li>
-            <li>No concept of "balance"</li>
+            <li>No need to rebalance the tree</li>
         </ul>
 
         <figure>
@@ -315,6 +314,8 @@
         <ul>
             <li>Key point: magnitude of data amplifies algorithmic waste</li>
             <li>Not to mention the lack of caching coherence</li>
+            <li>...and heap fragmentation</li>
+            <li>...and allocation blocking</li>
             <li>Pointers take up more space then the point data!</li>
             <li>Each node holds a point, or <i>n</i> points</li>
         </ul>
@@ -322,6 +323,7 @@
 </section>
 
 <!-- 11 - Bucketing overview -->
+<!--
 <section>
     <h1>Buckets of points?</h1>
     <ul>
@@ -356,33 +358,10 @@
         </ul>
     </aside>
 </section>
-
-<!-- 12 - Point spacing -->
-<section>
-    <h1>Point spacing</h1>
-
-    <figure>
-        <span class="line">
-            <img src="img/side-by-side-no-swap.png" alt="one" class="side-by-side"/>
-            <img src="img/side-by-side-swapped.png" alt="two" class="side-by-side"/>
-        </span>
-            <h6>Lack of spacing guarantee - effect on visualization</h6>
-        <figcaption><small>
-        </small></figcaption>
-    </figure>
-
-    <aside class="notes">
-        <ul>
-            <li>With bucket-resolution, finding grid position is expensive</li>
-            <li>Can't just accept first possible point</li>
-            <li>...otherwise we'd be dependent on insertion order</li>
-            <li>This is why you can't just bucket points by chunk bound</li>
-            <li>...since we need to locate each point with full detail</li>
-        </ul>
-    </aside>
-</section>
+-->
 
 <!-- 13 - Bucketing computational complexity -->
+<!--
 <section>
     <h1>A matter of scale</h1>
     <ul>
@@ -403,6 +382,7 @@
         </ul>
     </aside>
 </section>
+-->
 
 <!-- 14 - Entwine's linearization -->
 <section>
@@ -454,22 +434,25 @@
                 By <a href="//commons.wikimedia.org/wiki/User:David_Eppstein" class="mw-redirect" title="User:David Eppstein">David Eppstein</a>, based on an image by <a href="//commons.wikimedia.org/wiki/User:Hesperian" title="User:Hesperian">Hesperian</a>. Own work</span>, <a href="http://creativecommons.org/licenses/by-sa/3.0/" title="Creative Commons Attribution-Share Alike 3.0">CC BY-SA 3.0</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=3879675">🔗</a>
             </small></figcaption>
         </figure>
+        <aside class="notes">
+            <ul>
+                <li>String encodings are boring - can't do math on them</li>
+            </ul>
+        </aside>
     </section>
     <section>
         <h1>&nbsp;</h1>
 
         <figure>
             <img src="img/linearization.png" alt="linearization"/>
-            <h6>Global linearization</h6>
+            <h6>Global linearization - append each LoD</h6>
         </figure>
-    </section>
-    <section>
-        <h1>&nbsp;</h1>
 
-        <h2>Traversal</h2>
-        <p class="formula"><i>index <sub>d</sub></i> =
-            (<i>index <sub>d - 1</sub></i>) &lt;&lt; 2 + 1 + <i>direction</i>
-        </p>
+        <aside class="notes">
+            <ul>
+                <li>...instead of starting at zero for each depth</li>
+            </ul>
+        </aside>
     </section>
     <section>
         <h1>&nbsp;</h1>
@@ -481,9 +464,25 @@
 
         <aside class="notes">
             <ul>
-                <li>Important: these are <i>numbers</i>, not encodings</li>
-                <li>Can perform queries with mathematical operators</li>
                 <li>Logically: an infinitely long array</li>
+                <li>...because these are <i>numbers/offsets</i>, not encodings</li>
+                <li>Obvious question is: how do you calculate the distance of these hops?</li>
+            </ul>
+        </aside>
+    </section>
+    <section>
+        <h1>&nbsp;</h1>
+
+        <h2>Hopping down the array</h2>
+        <p class="formula"><i>index <sub>d</sub></i> =
+            (<i>index <sub>d - 1</sub></i>) &lt;&lt; 2 + 1 + <i>direction</i>
+        </p>
+
+
+        <aside class="notes">
+            <ul>
+                <li>Turns out to be pretty easy - and fast to calculate</li>
+                <li>We've removed the edges from our graph</li>
             </ul>
         </aside>
     </section>
@@ -499,7 +498,7 @@
             <li>Concurrency-friendly</li>
             <li>Traversing the tree is very efficient</li>
             <li>Ensuring point spacing is trivial</li>
-            <li>Queries are fast</li>
+            <li>Lots of things are calculable</li>
         </ul>
 
         <figure>
@@ -512,21 +511,40 @@
 
         <aside class="notes">
             <ul>
-                <li>Concurrency-friendly:
-                    no neighbor checks - one position at a time
-                </li>
+                <li>Concurrency-friendly: lots of threads can hop at once without interfering</li>
+                <li>Point spacing in one comparison - no neighbors</li>
                 <li>Efficient: quick to climb depths.
                     Also compact - no mappings required
                 </li>
-                <li>Don't need spatial query to select data</li>
             </ul>
         </aside>
     </section>
 </section>
 
+<!-- 12 - Point spacing -->
+<section>
+    <h1>Point spacing</h1>
+
+    <figure>
+        <span class="line">
+            <img src="img/side-by-side-no-swap.png" alt="one" class="side-by-side"/>
+            <img src="img/side-by-side-swapped.png" alt="two" class="side-by-side"/>
+        </span>
+            <h6>Lack of spacing guarantee - effect on visualization</h6>
+        <figcaption><small>
+        </small></figcaption>
+    </figure>
+
+    <aside class="notes">
+        <ul>
+            <li>Gloss over this</li>
+        </ul>
+    </aside>
+</section>
+
 <!-- 16 - Query properties -->
 <section>
-    <h1>Querying</h1>
+    <h1>Math stuff</h1>
     <section>
         <h1>&nbsp;</h1>
         <figure>
@@ -537,9 +555,16 @@
             <li>Bisect southeast, then bisect northwest</li>
             <li>These 2 traversals give us an ID of 17 at depth 2</li>
             <li>Call this the <i>nominal</i> depth for this tile
-                <ul><li>Where traversal bounds = query bounds</li></ul>
+                <ul><li>"How many times did we split?"</li></ul>
             </li>
         </ul>
+        <aside class="notes">
+            <ul>
+                <li>Here's one example of the mathematical properties</li>
+                <li>Going through this pretty fast</li>
+                <li>Nominal depth: number of splits to converge on the query</li>
+            </ul>
+        </aside>
     </section>
     <section>
         <h1>&nbsp;</h1>
@@ -574,33 +599,27 @@
                 </code>
             </li>
         </ul>
+        <aside class="notes">
+            <ul>
+                <li>If we've chunked that infinitely long array properly...</li>
+                <li>...which is trivial to do</li>
+            </ul>
+        </aside>
     </section>
 </section>
 
 <!-- 16 - Splitting methods -->
 <section>
     <h1>Chunk splitting</h1>
-    <!--
     <section>
-        <h2>At discrete events?</h2>
-        <ul>
-            <li>Split bucketed node when <i>numPoints > bucketSize</i></li>
-            <li>Will happen to high-traffic nodes frequently</li>
-            <li>Concurrent throughput is reduced</li>
-        </ul>
+        <pre><code class="infinity">
+ // TODO Doesn't seem to work.
 
-        <aside class="notes">
-            <ul>
-                <li>
-                    High-level nodes will frequently split &amp; block everyone
-                </li>
-            </ul>
-        </aside>
+ char* myTree = malloc(∞);
+        </code></pre>
     </section>
     <section>
         <h1>&nbsp;</h1>
-        <h2>Better: a priori</h2>
-    -->
         <ul>
             <li>Trivial to bound chunks spatially
                 <ul>
@@ -627,15 +646,12 @@
 
         <aside class="notes">
             <ul>
-                <li>How? Start on depth boundary and use binary sizing</li>
-                <li>Parallelizable because files tend not to overlap</li>
-                <li>Mapping acceptable for sparse chunks</li>
-                <li>...because they're very geospatially specialized</li>
+                <li>Unfortunately, we can't malloc an infinite-length array</li>
                 <li>Theoretical points-per-chunk grows indefinitely</li>
                 <li>Practial points-per-chunk shrinks</li>
             </ul>
         </aside>
-    <!-- </section> -->
+    </section>
 </section>
 
 <!-- 17 - More tricks -->

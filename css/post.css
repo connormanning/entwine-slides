@@ -61,3 +61,7 @@ video[alt=zoom] { max-width: 50%; }
     margin-top: 3vh;
 }
 
+.infinity {
+    font-size: 4vh !important;
+}
+
