@@ -87,18 +87,17 @@
 
     <aside class="notes">
         <ul>
-            <li>A lot of data here - better not to touch it</li>
             <li>Difficult to access
                 <ul>
                     <li>Clients can't drive the access</li>
-                    <li>Have an AOI - need large downloads</li>
+                    <li>Need large downloads</li>
                     <li>No overview/preview</li>
                 </ul>
             </li>
             <li>Difficult to manage - from a <i>logical</i> standpoint
                 <ul>
                     <li>Can't treat data as a single unit</li>
-                    <li>Need to sidecar metadata?</li>
+                    <li>Always obvious you're working with tiles</li>
                 </ul>
             </li>
         </ul>
@@ -125,7 +124,8 @@
             <li>Want an abstraction</li>
             <li>Doesn't necessarily need to be a dynamic service</li>
             <li>Static serving isn't ruled out</li>
-            <li>Flexible - not <i>only</i> for visualization</li>
+            <li>Flexible - vizualization first - not visualization <i>only</i>
+            </li>
         </ul>
     </aside>
 </section>
@@ -137,14 +137,12 @@
     <ul>
         <li>Cannot meet these needs with a <i>meta</i>-index</li>
         <li>Level-of-detail query is unreasonable</li>
-        <li>Up-front cost is ok</li>
     </ul>
 
     <aside class="notes">
         <ul>
             <li>Why no meta-index?
                 <ul>
-                    <li>Want to treat set as a logical unit</li>
                     <li>Need hierarchical access</li>
                     <li>Low-res overview has minimum of touching each file</li>
                 </ul>
@@ -155,6 +153,7 @@
                     <li>Current organization is non-trivial</li>
                 </ul>
             </li>
+            <li>Up-front cost is ok</li>
         </ul>
     </aside>
 </section>
@@ -314,10 +313,7 @@
         <ul>
             <li>Key point: magnitude of data amplifies algorithmic waste</li>
             <li>Not to mention the lack of caching coherence</li>
-            <li>...and heap fragmentation</li>
-            <li>...and allocation blocking</li>
-            <li>Pointers take up more space then the point data!</li>
-            <li>Each node holds a point, or <i>n</i> points</li>
+            <li>Pointers take up more space than the point data!</li>
         </ul>
     </aside>
 </section>
@@ -445,7 +441,7 @@
 
         <figure>
             <img src="img/linearization.png" alt="linearization"/>
-            <h6>Global linearization - append each LoD</h6>
+            <h6>Global linearization - assign numbering</h6>
         </figure>
 
         <aside class="notes">
@@ -467,6 +463,7 @@
                 <li>Logically: an infinitely long array</li>
                 <li>...because these are <i>numbers/offsets</i>, not encodings</li>
                 <li>Obvious question is: how do you calculate the distance of these hops?</li>
+                <li>If we can do that quickly, we've removed all edges from our algorithm</li>
             </ul>
         </aside>
     </section>
@@ -475,7 +472,7 @@
 
         <h2>Hopping down the array</h2>
         <p class="formula"><i>index <sub>d</sub></i> =
-            (<i>index <sub>d - 1</sub></i>) &lt;&lt; 2 + 1 + <i>direction</i>
+            (<i>index <sub>d - 1</sub></i> &lt;&lt; 2) + 1 + <i>direction</i>
         </p>
 
 
@@ -496,7 +493,7 @@
         <h1>&nbsp;</h1>
         <ul>
             <li>Concurrency-friendly</li>
-            <li>Traversing the tree is very efficient</li>
+            <li>Greatly simplified data structures</li>
             <li>Ensuring point spacing is trivial</li>
             <li>Lots of things are calculable</li>
         </ul>
@@ -538,6 +535,7 @@
     <aside class="notes">
         <ul>
             <li>Gloss over this</li>
+            <li>This is why it's nice to have exact point position - rather than an unorganized bucket</li>
         </ul>
     </aside>
 </section>

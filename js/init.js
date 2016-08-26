@@ -1,5 +1,5 @@
 Reveal.initialize({
-    showNotes: true,
+    // showNotes: true,
     history: true,
     dependencies: [
         { src: 'plugin/markdown/marked.js' },
